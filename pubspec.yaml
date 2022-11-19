@@ -1,6 +1,6 @@
 name: psgc_picker
 description: This package is used for listing all the region, province, city, municipality, and barangay. Philippine Standard Geographic Codes
-version: 1.0.3
+version: 1.0.1
 maintainer: Neil Cabug-os (@neilcabugos)
 repository: https://github.com/neilcabugos/psgc_picker
 issue_tracker: https://github.com/neilcabugos/psgc_picker/issues
