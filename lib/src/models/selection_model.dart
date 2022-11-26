@@ -8,7 +8,7 @@ class SelectionModel {
 
   factory SelectionModel.fromJson(Map<String, dynamic> json) => SelectionModel(
         code: json.containsKey('code') ? json['code'] : '',
-        name: json.containsKey('name') ? json['name'] : '',
+        name: json.containsKey('name') ? json['name'].toString().toUpperCase() : '',
         regionCode: json.containsKey('regionCode') ? json['regionCode'] : '',
         provinceCode:
             json.containsKey('provinceCode') ? json['provinceCode'] : '',
