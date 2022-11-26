@@ -23,6 +23,9 @@ class MyApp extends StatelessWidget {
             regionLabel: 'Region',
             provinceLabel: 'Province',
             cityLabel: 'City/Municipality',
+            selectedRegion: 'CALABARZON',
+            selectedProvince: 'RIZAL',
+            selectedCity: 'CAINTA',
             spacing: 10,
             onRegionChanged: (value) => {
               // Get the selected value here
