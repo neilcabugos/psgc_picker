@@ -15,7 +15,7 @@ class PsgcPicker extends StatefulWidget {
   final ValueChanged<String> onRegionChanged;
   final ValueChanged<String> onProvinceChanged;
   final ValueChanged<String> onCityChanged;
-  
+
   final String selectedRegion;
   final String selectedProvince;
   final String selectedCity;
@@ -64,20 +64,22 @@ class _PsgcPickerState extends State<PsgcPicker> {
     _cityList = await getList('city');
     setState(() {
       _region = _regionList;
-      var selectRegion = _region.firstWhere((element) => element.name == widget.selectedRegion, 
-        orElse: () => SelectionModel());
+      var selectRegion = _region.firstWhere(
+          (element) => element.name == widget.selectedRegion,
+          orElse: () => SelectionModel());
       if (selectRegion.code != null) {
         _applyRegion(selectRegion.code!);
 
-        var selectProvince = _province.firstWhere((element) => element.name == widget.selectedProvince, 
-          orElse: () => SelectionModel());
+        var selectProvince = _province.firstWhere(
+            (element) => element.name == widget.selectedProvince,
+            orElse: () => SelectionModel());
         if (selectProvince.code != null) _applyProvince(selectProvince.code!);
 
-        var selectCity = _city.firstWhere((element) => element.name == widget.selectedCity, 
-          orElse: () => SelectionModel());
+        var selectCity = _city.firstWhere(
+            (element) => element.name == widget.selectedCity,
+            orElse: () => SelectionModel());
         if (selectCity.code != null) _applyCity(selectCity.code!);
       }
-
     });
   }
 
