@@ -8,12 +8,22 @@ import 'package:psgc_picker/src/widgets/psgc_dropdown_widget.dart';
 class PsgcPicker extends StatefulWidget {
   final double spacing;
 
+  /// (optional) Displayed label for region
   final String? regionLabel;
+
+  /// (optional) Displayed label for province
   final String? provinceLabel;
+
+  /// (optional) Displayed label for city
   final String? cityLabel;
 
+  /// (required) returns a function with string value from [region] selection
   final ValueChanged<String> onRegionChanged;
+
+  /// (required) returns a function with string value from [province] selection
   final ValueChanged<String> onProvinceChanged;
+
+  /// (required) returns a function with string value from [city] selection
   final ValueChanged<String> onCityChanged;
 
   final String selectedRegion;
