@@ -6,7 +6,7 @@ repository: https://github.com/neilcabugos/psgc_picker
 issue_tracker: https://github.com/neilcabugos/psgc_picker/issues
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
