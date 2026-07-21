@@ -26,8 +26,23 @@ class PsgcPicker extends StatefulWidget {
   /// (required) returns a function with string value from [city] selection
   final ValueChanged<String> onCityChanged;
 
+  /// Initial region selection, given as a **name** (not a code), e.g.
+  /// `'Ilocos Region'`. Matching against the loaded dataset is
+  /// case-insensitive and trims leading/trailing whitespace. A name that
+  /// doesn't match any entry silently leaves the region (and downstream
+  /// province/city) unselected — it does not throw.
   final String selectedRegion;
+
+  /// Initial province selection, given as a **name** (not a code). Same
+  /// case-insensitive, trimmed matching and silent-no-op-on-mismatch
+  /// behavior as [selectedRegion]. Only applied if [selectedRegion] itself
+  /// resolves to a match.
   final String selectedProvince;
+
+  /// Initial city/municipality selection, given as a **name** (not a code).
+  /// Same case-insensitive, trimmed matching and silent-no-op-on-mismatch
+  /// behavior as [selectedRegion]. Only applied if [selectedProvince] itself
+  /// resolves to a match.
   final String selectedCity;
 
   const PsgcPicker(
@@ -85,19 +100,20 @@ class _PsgcPickerState extends State<PsgcPicker> {
       _region = _regionList;
       var selectRegion = _region.firstWhere(
           (element) =>
-              element.name == widget.selectedRegion.toUpperCase(),
+              element.name == widget.selectedRegion.trim().toUpperCase(),
           orElse: () => SelectionModel());
       if (selectRegion.code != null) {
         _applyRegion(selectRegion.code!);
 
         var selectProvince = _province.firstWhere(
             (element) =>
-                element.name == widget.selectedProvince.toUpperCase(),
+                element.name == widget.selectedProvince.trim().toUpperCase(),
             orElse: () => SelectionModel());
         if (selectProvince.code != null) _applyProvince(selectProvince.code!);
 
         var selectCity = _city.firstWhere(
-            (element) => element.name == widget.selectedCity.toUpperCase(),
+            (element) =>
+                element.name == widget.selectedCity.trim().toUpperCase(),
             orElse: () => SelectionModel());
         if (selectCity.code != null) _applyCity(selectCity.code!);
       }
@@ -116,8 +132,11 @@ class _PsgcPickerState extends State<PsgcPicker> {
           .where((element) => element.regionCode == value)
           .toList();
       if (_province.isEmpty) {
+        // NCR-style region with no distinct provinces: treat the region
+        // itself as the sole "province" entry and cascade straight into it,
+        // without nesting another setState inside this one.
         _province = _region.where((element) => element.code == value).toList();
-        _applyProvince(value);
+        _selectProvince(value);
       }
       var selected = _region.firstWhere((element) => element.code == value,
           orElse: () => SelectionModel());
@@ -127,18 +146,20 @@ class _PsgcPickerState extends State<PsgcPicker> {
 
   void _applyProvince(String value) {
     if (!mounted) return;
-    setState(() {
-      _selectedProvinceCode = value;
-      _selectedCityCode = null;
-      _city.clear();
-      _city = _cityList
-          .where((element) =>
-              element.provinceCode == value || element.regionCode == value)
-          .toList();
-      var selected = _province.firstWhere((element) => element.code == value,
-          orElse: () => SelectionModel());
-      if (selected.name != null) widget.onProvinceChanged(selected.name!);
-    });
+    setState(() => _selectProvince(value));
+  }
+
+  void _selectProvince(String value) {
+    _selectedProvinceCode = value;
+    _selectedCityCode = null;
+    _city.clear();
+    _city = _cityList
+        .where((element) =>
+            element.provinceCode == value || element.regionCode == value)
+        .toList();
+    var selected = _province.firstWhere((element) => element.code == value,
+        orElse: () => SelectionModel());
+    if (selected.name != null) widget.onProvinceChanged(selected.name!);
   }
 
   void _applyCity(String value) {
