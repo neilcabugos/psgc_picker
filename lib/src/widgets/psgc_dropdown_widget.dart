@@ -24,8 +24,8 @@ class PsgcDropdownWidget extends StatelessWidget {
           child: DropdownButton<String>(
         isExpanded: true,
         items: selection
-            .map((SelectionModel item) =>
-                DropdownMenuItem(value: item.code, child: Text(item.name!)))
+            .map((SelectionModel item) => DropdownMenuItem(
+                value: item.code, child: Text(item.name ?? '')))
             .toList(),
         onChanged: (value) => onSelectionChanged(value!),
         value: selectedValue,

@@ -97,8 +97,7 @@ void main() {
     expect(itemCodes(province), unorderedEquals(_ilocosProvinceCodes));
   });
 
-  testWidgets('selecting a province filters the city dropdown',
-      (tester) async {
+  testWidgets('selecting a province filters the city dropdown', (tester) async {
     await pumpPicker(tester);
 
     dropdowns(tester)[0].onChanged!(_ilocosRegionCode);
