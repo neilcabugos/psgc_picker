@@ -61,6 +61,8 @@ class _PsgcPickerState extends State<PsgcPicker> {
   String? _selectedProvinceCode;
   String? _selectedCityCode;
 
+  Object? _loadError;
+
   Future<List<SelectionModel>> getList(String filename) async {
     var res = await rootBundle
         .loadString("packages/psgc_picker/lib/src/assets/$filename.json");
@@ -69,9 +71,15 @@ class _PsgcPickerState extends State<PsgcPicker> {
   }
 
   void initializeList() async {
-    _regionList = await getList('region');
-    _provinceList = await getList('province');
-    _cityList = await getList('city');
+    try {
+      _regionList = await getList('region');
+      _provinceList = await getList('province');
+      _cityList = await getList('city');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loadError = e);
+      return;
+    }
     if (!mounted) return;
     setState(() {
       _region = _regionList;
@@ -111,8 +119,9 @@ class _PsgcPickerState extends State<PsgcPicker> {
         _province = _region.where((element) => element.code == value).toList();
         _applyProvince(value);
       }
-      var selected = _region.firstWhere((element) => element.code == value);
-      widget.onRegionChanged(selected.name!);
+      var selected = _region.firstWhere((element) => element.code == value,
+          orElse: () => SelectionModel());
+      if (selected.name != null) widget.onRegionChanged(selected.name!);
     });
   }
 
@@ -126,8 +135,9 @@ class _PsgcPickerState extends State<PsgcPicker> {
           .where((element) =>
               element.provinceCode == value || element.regionCode == value)
           .toList();
-      var selected = _province.firstWhere((element) => element.code == value);
-      widget.onProvinceChanged(selected.name!);
+      var selected = _province.firstWhere((element) => element.code == value,
+          orElse: () => SelectionModel());
+      if (selected.name != null) widget.onProvinceChanged(selected.name!);
     });
   }
 
@@ -135,8 +145,9 @@ class _PsgcPickerState extends State<PsgcPicker> {
     if (!mounted) return;
     setState(() {
       _selectedCityCode = value;
-      var selected = _city.firstWhere((element) => element.code == value);
-      widget.onCityChanged(selected.name!);
+      var selected = _city.firstWhere((element) => element.code == value,
+          orElse: () => SelectionModel());
+      if (selected.name != null) widget.onCityChanged(selected.name!);
     });
   }
 
@@ -148,6 +159,9 @@ class _PsgcPickerState extends State<PsgcPicker> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loadError != null) {
+      return Text('Failed to load PSGC data: $_loadError');
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
