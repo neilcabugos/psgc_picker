@@ -72,21 +72,24 @@ class _PsgcPickerState extends State<PsgcPicker> {
     _regionList = await getList('region');
     _provinceList = await getList('province');
     _cityList = await getList('city');
+    if (!mounted) return;
     setState(() {
       _region = _regionList;
       var selectRegion = _region.firstWhere(
-          (element) => element.name == widget.selectedRegion,
+          (element) =>
+              element.name == widget.selectedRegion.toUpperCase(),
           orElse: () => SelectionModel());
       if (selectRegion.code != null) {
         _applyRegion(selectRegion.code!);
 
         var selectProvince = _province.firstWhere(
-            (element) => element.name == widget.selectedProvince,
+            (element) =>
+                element.name == widget.selectedProvince.toUpperCase(),
             orElse: () => SelectionModel());
         if (selectProvince.code != null) _applyProvince(selectProvince.code!);
 
         var selectCity = _city.firstWhere(
-            (element) => element.name == widget.selectedCity,
+            (element) => element.name == widget.selectedCity.toUpperCase(),
             orElse: () => SelectionModel());
         if (selectCity.code != null) _applyCity(selectCity.code!);
       }
