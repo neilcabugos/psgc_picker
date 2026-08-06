@@ -1,0 +1,7 @@
+# Internal project files - not relevant to package consumers.
+CLAUDE.md
+
+# Generated build artifacts - already in .gitignore, but a .pubignore file
+# switches pub's file selection to walk the full tree, so list explicitly.
+build/
+.dart_tool/
