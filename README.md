@@ -1,6 +1,6 @@
 ## PSGC Picker
 
-This package is used for listing all the region, province, city, municipality, and barangay. Philippine Standard Geographic Codes
+This package is used for listing all the region, province, and city/municipality. Philippine Standard Geographic Codes
 
 ## Installation
 
