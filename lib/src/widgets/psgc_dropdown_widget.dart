@@ -13,8 +13,7 @@ class PsgcDropdownWidget extends StatelessWidget {
       required this.selectedValue,
       this.decoration =
           const InputDecoration(contentPadding: EdgeInsets.all(0.0)),
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {

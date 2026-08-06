@@ -56,8 +56,7 @@ class PsgcPicker extends StatefulWidget {
       this.regionLabel,
       this.provinceLabel,
       this.cityLabel,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   State<PsgcPicker> createState() => _PsgcPickerState();
