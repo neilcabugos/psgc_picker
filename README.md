@@ -45,6 +45,57 @@ class MyApp extends StatelessWidget {
 }
 ```
 
+![PsgcPicker rendering region, province, and city dropdowns in a single column](screenshots/psgc_picker.png)
+
+### Advanced: standalone fields
+
+`PsgcPicker` renders all three dropdowns together in one fixed column. If you need to place region/province/city elsewhere in your UI — separate cards, separate form sections, conditionally shown/hidden — create a `PsgcPickerController` once and use `PsgcRegionField`, `PsgcProvinceField`, and `PsgcCityField` independently. They share cascading state through the controller, wherever each one is placed in the tree.
+
+```dart
+class MyForm extends StatefulWidget {
+  const MyForm({super.key});
+
+  @override
+  State<MyForm> createState() => _MyFormState();
+}
+
+class _MyFormState extends State<MyForm> {
+  late final PsgcPickerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PsgcPickerController(
+      selectedRegion: 'CALABARZON',
+      selectedProvince: 'RIZAL',
+      selectedCity: 'CAINTA',
+      onRegionChanged: (value) => {},
+      onProvinceChanged: (value) => {},
+      onCityChanged: (value) => {},
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // you own the controller, so you dispose it
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Card(child: PsgcRegionField(controller: _controller, label: 'Region')),
+        Card(child: PsgcProvinceField(controller: _controller, label: 'Province')),
+        Card(child: PsgcCityField(controller: _controller, label: 'City/Municipality')),
+      ],
+    );
+  }
+}
+```
+
+![Region, province, and city fields sharing a PsgcPickerController while rendered in separate cards](screenshots/standalone_fields.png)
+
 ## Notes
 
 If the data is outdate, feel free to create issue. Thank you
