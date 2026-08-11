@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:psgc_picker/src/models/selection_model.dart';
-import 'package:psgc_picker/src/widgets/psgc_dropdown_widget.dart';
+import 'package:psgc_picker/src/psgc_picker_controller.dart';
+import 'package:psgc_picker/src/widgets/psgc_city_field.dart';
+import 'package:psgc_picker/src/widgets/psgc_province_field.dart';
+import 'package:psgc_picker/src/widgets/psgc_region_field.dart';
 
 class PsgcPicker extends StatefulWidget {
   final double spacing;
@@ -63,149 +62,47 @@ class PsgcPicker extends StatefulWidget {
 }
 
 class _PsgcPickerState extends State<PsgcPicker> {
-  List<SelectionModel> _regionList = [];
-  List<SelectionModel> _provinceList = [];
-  List<SelectionModel> _cityList = [];
-
-  List<SelectionModel> _region = [];
-  List<SelectionModel> _province = [];
-  List<SelectionModel> _city = [];
-
-  String? _selectedRegionCode;
-  String? _selectedProvinceCode;
-  String? _selectedCityCode;
-
-  Object? _loadError;
-
-  Future<List<SelectionModel>> getList(String filename) async {
-    var res = await rootBundle
-        .loadString("packages/psgc_picker/lib/src/assets/$filename.json");
-    Iterable list = jsonDecode(res);
-    return list.map((e) => SelectionModel.fromJson(e)).toList();
-  }
-
-  void initializeList() async {
-    try {
-      _regionList = await getList('region');
-      _provinceList = await getList('province');
-      _cityList = await getList('city');
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _loadError = e);
-      return;
-    }
-    if (!mounted) return;
-    setState(() {
-      _region = _regionList;
-      var selectRegion = _region.firstWhere(
-          (element) =>
-              element.name == widget.selectedRegion.trim().toUpperCase(),
-          orElse: () => SelectionModel());
-      if (selectRegion.code != null) {
-        _applyRegion(selectRegion.code!);
-
-        var selectProvince = _province.firstWhere(
-            (element) =>
-                element.name == widget.selectedProvince.trim().toUpperCase(),
-            orElse: () => SelectionModel());
-        if (selectProvince.code != null) _applyProvince(selectProvince.code!);
-
-        var selectCity = _city.firstWhere(
-            (element) =>
-                element.name == widget.selectedCity.trim().toUpperCase(),
-            orElse: () => SelectionModel());
-        if (selectCity.code != null) _applyCity(selectCity.code!);
-      }
-    });
-  }
-
-  void _applyRegion(String value) {
-    if (!mounted) return;
-    setState(() {
-      _selectedRegionCode = value;
-      _province.clear();
-      _selectedProvinceCode = null;
-      _city.clear();
-      _selectedCityCode = null;
-      _province = _provinceList
-          .where((element) => element.regionCode == value)
-          .toList();
-      if (_province.isEmpty) {
-        // NCR-style region with no distinct provinces: treat the region
-        // itself as the sole "province" entry and cascade straight into it,
-        // without nesting another setState inside this one.
-        _province = _region.where((element) => element.code == value).toList();
-        _selectProvince(value);
-      }
-      var selected = _region.firstWhere((element) => element.code == value,
-          orElse: () => SelectionModel());
-      if (selected.name != null) widget.onRegionChanged(selected.name!);
-    });
-  }
-
-  void _applyProvince(String value) {
-    if (!mounted) return;
-    setState(() => _selectProvince(value));
-  }
-
-  void _selectProvince(String value) {
-    _selectedProvinceCode = value;
-    _selectedCityCode = null;
-    _city.clear();
-    _city = _cityList
-        .where((element) =>
-            element.provinceCode == value || element.regionCode == value)
-        .toList();
-    var selected = _province.firstWhere((element) => element.code == value,
-        orElse: () => SelectionModel());
-    if (selected.name != null) widget.onProvinceChanged(selected.name!);
-  }
-
-  void _applyCity(String value) {
-    if (!mounted) return;
-    setState(() {
-      _selectedCityCode = value;
-      var selected = _city.firstWhere((element) => element.code == value,
-          orElse: () => SelectionModel());
-      if (selected.name != null) widget.onCityChanged(selected.name!);
-    });
-  }
+  late final PsgcPickerController _controller;
 
   @override
   void initState() {
-    initializeList();
     super.initState();
+    _controller = PsgcPickerController(
+      selectedRegion: widget.selectedRegion,
+      selectedProvince: widget.selectedProvince,
+      selectedCity: widget.selectedCity,
+      onRegionChanged: widget.onRegionChanged,
+      onProvinceChanged: widget.onProvinceChanged,
+      onCityChanged: widget.onCityChanged,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loadError != null) {
-      return Text('Failed to load PSGC data: $_loadError');
-    }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        PsgcDropdownWidget(
-          decoration: InputDecoration(labelText: widget.regionLabel),
-          selection: _region,
-          selectedValue: _selectedRegionCode,
-          onSelectionChanged: (value) => _applyRegion(value),
-        ),
-        SizedBox(height: widget.spacing),
-        PsgcDropdownWidget(
-          decoration: InputDecoration(labelText: widget.provinceLabel),
-          selection: _province,
-          selectedValue: _selectedProvinceCode,
-          onSelectionChanged: (value) => _applyProvince(value),
-        ),
-        SizedBox(height: widget.spacing),
-        PsgcDropdownWidget(
-          decoration: InputDecoration(labelText: widget.cityLabel),
-          selection: _city,
-          selectedValue: _selectedCityCode,
-          onSelectionChanged: (value) => _applyCity(value),
-        ),
-      ],
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        if (_controller.loadError != null) {
+          return Text('Failed to load PSGC data: ${_controller.loadError}');
+        }
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            PsgcRegionField(controller: _controller, label: widget.regionLabel),
+            SizedBox(height: widget.spacing),
+            PsgcProvinceField(
+                controller: _controller, label: widget.provinceLabel),
+            SizedBox(height: widget.spacing),
+            PsgcCityField(controller: _controller, label: widget.cityLabel),
+          ],
+        );
+      },
     );
   }
 }
