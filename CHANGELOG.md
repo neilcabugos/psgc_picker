@@ -1,3 +1,10 @@
+## 1.1.0
+### What's Changed
+- Added `PsgcPickerController`, which owns PSGC data loading and cascading selection state independently of any particular widget layout
+- Added `PsgcRegionField`, `PsgcProvinceField`, and `PsgcCityField` — standalone dropdowns that bind to a shared `PsgcPickerController` and can be placed anywhere in the widget tree, instead of only as a single fixed `PsgcPicker` column
+- Exported `SelectionModel`, needed to reference the type returned by the controller's list getters
+- `PsgcPicker` itself is unchanged and now implemented as a thin wrapper around the new controller/fields — fully backward compatible
+
 ## 1.0.3
 ### What's Changed
 - Widened Dart SDK constraint to support Dart 3 (previously capped below 3.0.0)
