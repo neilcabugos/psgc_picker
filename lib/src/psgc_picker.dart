@@ -16,6 +16,18 @@ class PsgcPicker extends StatefulWidget {
   /// (optional) Displayed label for city
   final String? cityLabel;
 
+  /// (optional) Decoration for the region field. Takes precedence over
+  /// [regionLabel] when both are provided.
+  final InputDecoration? regionDecoration;
+
+  /// (optional) Decoration for the province field. Takes precedence over
+  /// [provinceLabel] when both are provided.
+  final InputDecoration? provinceDecoration;
+
+  /// (optional) Decoration for the city field. Takes precedence over
+  /// [cityLabel] when both are provided.
+  final InputDecoration? cityDecoration;
+
   /// (required) returns a function with string value from [region] selection
   final ValueChanged<String> onRegionChanged;
 
@@ -55,6 +67,9 @@ class PsgcPicker extends StatefulWidget {
       this.regionLabel,
       this.provinceLabel,
       this.cityLabel,
+      this.regionDecoration,
+      this.provinceDecoration,
+      this.cityDecoration,
       super.key});
 
   @override
@@ -94,12 +109,20 @@ class _PsgcPickerState extends State<PsgcPicker> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            PsgcRegionField(controller: _controller, label: widget.regionLabel),
+            PsgcRegionField(
+                controller: _controller,
+                label: widget.regionLabel,
+                decoration: widget.regionDecoration),
             SizedBox(height: widget.spacing),
             PsgcProvinceField(
-                controller: _controller, label: widget.provinceLabel),
+                controller: _controller,
+                label: widget.provinceLabel,
+                decoration: widget.provinceDecoration),
             SizedBox(height: widget.spacing),
-            PsgcCityField(controller: _controller, label: widget.cityLabel),
+            PsgcCityField(
+                controller: _controller,
+                label: widget.cityLabel,
+                decoration: widget.cityDecoration),
           ],
         );
       },
