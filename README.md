@@ -96,6 +96,43 @@ class _MyFormState extends State<MyForm> {
 
 ![Region, province, and city fields sharing a PsgcPickerController while rendered in separate cards](screenshots/standalone_fields.png)
 
+### Styling
+
+Each field (`regionLabel`/`regionDecoration`, `provinceLabel`/`provinceDecoration`, `cityLabel`/`cityDecoration` on `PsgcPicker`; `label`/`decoration` on `PsgcRegionField`, `PsgcProvinceField`, `PsgcCityField`) accepts either:
+
+- a plain `String` label — wrapped internally as `InputDecoration(labelText: label)`, or
+- a full `InputDecoration` — for control over borders, fill color, icons, hint text, error text, etc. When both are supplied, `decoration` takes precedence over `label`.
+
+`spacing` on `PsgcPicker` controls the vertical gap between the three dropdowns.
+
+```dart
+PsgcPicker(
+  regionDecoration: const InputDecoration(
+    labelText: 'Region',
+    prefixIcon: Icon(Icons.map_outlined),
+    border: OutlineInputBorder(),
+    filled: true,
+  ),
+  provinceDecoration: const InputDecoration(
+    labelText: 'Province',
+    border: OutlineInputBorder(),
+  ),
+  cityDecoration: const InputDecoration(
+    labelText: 'City/Municipality',
+    border: OutlineInputBorder(),
+  ),
+  spacing: 12,
+  selectedRegion: 'CALABARZON',
+  selectedProvince: 'RIZAL',
+  selectedCity: 'CAINTA',
+  onRegionChanged: (value) => {},
+  onProvinceChanged: (value) => {},
+  onCityChanged: (value) => {},
+)
+```
+
+The same `decoration` parameter works identically on the standalone `PsgcRegionField`/`PsgcProvinceField`/`PsgcCityField` widgets.
+
 ## Notes
 
 If the data is outdate, feel free to create issue. Thank you
