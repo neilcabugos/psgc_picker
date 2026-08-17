@@ -197,4 +197,43 @@ void main() {
     await tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 100)));
   });
+
+  testWidgets(
+      'selecting an unknown/stale code is a no-op that leaves state '
+      'unchanged', (tester) async {
+    final regionChanges = <String>[];
+    final provinceChanges = <String>[];
+    final cityChanges = <String>[];
+    late PsgcPickerController controller;
+    await tester.runAsync(() async {
+      controller = PsgcPickerController(
+        onRegionChanged: regionChanges.add,
+        onProvinceChanged: provinceChanges.add,
+        onCityChanged: cityChanges.add,
+      );
+      await controller.load();
+      controller.selectRegion(_ilocosRegionCode);
+      controller.selectProvince(_ilocosNorteCode);
+      controller.selectCity(_adamsCode);
+    });
+    regionChanges.clear();
+    provinceChanges.clear();
+    cityChanges.clear();
+
+    var notifyCount = 0;
+    controller.addListener(() => notifyCount++);
+
+    expect(controller.selectRegion('not-a-real-code'), isNull);
+    expect(controller.selectProvince('not-a-real-code'), isNull);
+    expect(controller.selectCity('not-a-real-code'), isNull);
+
+    expect(notifyCount, 0);
+    expect(regionChanges, isEmpty);
+    expect(provinceChanges, isEmpty);
+    expect(cityChanges, isEmpty);
+    expect(controller.selectedRegionCode, _ilocosRegionCode);
+    expect(controller.selectedProvinceCode, _ilocosNorteCode);
+    expect(controller.selectedCityCode, _adamsCode);
+    controller.dispose();
+  });
 }

@@ -145,8 +145,10 @@ class PsgcPickerController extends ChangeNotifier {
   /// Selects a region by code, filtering [provinceList] (or cascading
   /// straight to [cityList] for NCR-style regions with no distinct
   /// provinces) and clearing any downstream province/city selection.
-  /// Returns the resolved region name, if any.
+  /// Returns the resolved region name, if any. If [value] doesn't match any
+  /// entry in [regionList], this is a no-op and returns `null`.
   String? selectRegion(String value) {
+    if (!_region.any((element) => element.code == value)) return null;
     var name = _selectRegionInternal(value);
     if (!_disposed) notifyListeners();
     return name;
@@ -168,7 +170,10 @@ class PsgcPickerController extends ChangeNotifier {
 
   /// Selects a province by code, filtering [cityList] and clearing any
   /// downstream city selection. Returns the resolved province name, if any.
+  /// If [value] doesn't match any entry in [provinceList], this is a no-op
+  /// and returns `null`.
   String? selectProvince(String value) {
+    if (!_province.any((element) => element.code == value)) return null;
     var name = _selectProvinceInternal(value);
     if (!_disposed) notifyListeners();
     return name;
@@ -182,8 +187,11 @@ class PsgcPickerController extends ChangeNotifier {
     return selected.name;
   }
 
-  /// Selects a city by code. Returns the resolved city name, if any.
+  /// Selects a city by code. Returns the resolved city name, if any. If
+  /// [value] doesn't match any entry in [cityList], this is a no-op and
+  /// returns `null`.
   String? selectCity(String value) {
+    if (!_city.any((element) => element.code == value)) return null;
     var name = _selectCityInternal(value);
     if (!_disposed) notifyListeners();
     return name;
