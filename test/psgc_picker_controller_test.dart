@@ -236,4 +236,34 @@ void main() {
     expect(controller.selectedCityCode, _adamsCode);
     controller.dispose();
   });
+
+  testWidgets(
+      'calling load() again after a successful load is a no-op that '
+      'preserves selections made since', (tester) async {
+    final regionChanges = <String>[];
+    late PsgcPickerController controller;
+    await tester.runAsync(() async {
+      controller = PsgcPickerController(
+        selectedRegion: _ilocosRegionName,
+        onRegionChanged: regionChanges.add,
+      );
+      await controller.load();
+      // A selection made after the initial load resolves.
+      controller.selectRegion(_cagayanValleyRegionCode);
+    });
+    regionChanges.clear();
+
+    var notifyCount = 0;
+    controller.addListener(() => notifyCount++);
+
+    await tester.runAsync(() => controller.load());
+
+    expect(notifyCount, 0);
+    expect(regionChanges, isEmpty);
+    // Still the region selected after load, not selectedRegion reapplied.
+    expect(controller.selectedRegionCode, _cagayanValleyRegionCode);
+    expect(controller.provinceList.map((e) => e.code),
+        unorderedEquals(_cagayanValleyProvinceCodes));
+    controller.dispose();
+  });
 }
