@@ -55,6 +55,7 @@ class PsgcPickerController extends ChangeNotifier {
   String? _selectedCityCode;
 
   bool _isLoading = false;
+  bool _loaded = false;
   Future<void>? _inFlightLoad;
   Object? _loadError;
   bool _disposed = false;
@@ -79,9 +80,14 @@ class PsgcPickerController extends ChangeNotifier {
 
   /// Loads the bundled region/province/city datasets and applies the
   /// initial [selectedRegion]/[selectedProvince]/[selectedCity], if given.
-  /// Safe to call more than once; a call made while a load is already in
-  /// flight awaits that same load rather than starting a second one.
+  /// Idempotent: a call made while a load is already in flight awaits that
+  /// same load rather than starting a second one, and a call made after a
+  /// previous load already completed *successfully* is a no-op — it will
+  /// not re-parse the datasets or re-apply the initial selections over any
+  /// selections made since. If the previous load failed (see [loadError]),
+  /// a further call retries it from scratch.
   Future<void> load() {
+    if (_loaded) return Future.value();
     return _inFlightLoad ??= _load().whenComplete(() => _inFlightLoad = null);
   }
 
@@ -119,6 +125,7 @@ class PsgcPickerController extends ChangeNotifier {
     }
 
     _isLoading = false;
+    _loaded = true;
     if (!_disposed) notifyListeners();
   }
 
