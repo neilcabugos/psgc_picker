@@ -148,7 +148,7 @@ class PsgcPickerController extends ChangeNotifier {
   /// Returns the resolved region name, if any.
   String? selectRegion(String value) {
     var name = _selectRegionInternal(value);
-    notifyListeners();
+    if (!_disposed) notifyListeners();
     return name;
   }
 
@@ -170,7 +170,7 @@ class PsgcPickerController extends ChangeNotifier {
   /// downstream city selection. Returns the resolved province name, if any.
   String? selectProvince(String value) {
     var name = _selectProvinceInternal(value);
-    notifyListeners();
+    if (!_disposed) notifyListeners();
     return name;
   }
 
@@ -185,7 +185,7 @@ class PsgcPickerController extends ChangeNotifier {
   /// Selects a city by code. Returns the resolved city name, if any.
   String? selectCity(String value) {
     var name = _selectCityInternal(value);
-    notifyListeners();
+    if (!_disposed) notifyListeners();
     return name;
   }
 
