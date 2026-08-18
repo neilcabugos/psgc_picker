@@ -3,7 +3,8 @@
   "packages": {
     ".": {
       "release-type": "dart",
-      "package-name": "psgc_picker"
+      "include-v-in-tag": false,
+      "include-v-in-release-name": false
     }
   }
 }
