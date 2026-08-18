@@ -1,3 +1,5 @@
+# Changelog
+
 ## 1.1.0
 ### What's Changed
 - Added `PsgcPickerController`, which owns PSGC data loading and cascading selection state independently of any particular widget layout
