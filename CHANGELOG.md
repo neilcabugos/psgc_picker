@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.2](https://github.com/neilcabugos/psgc_picker/compare/1.1.1...1.1.2) (2026-08-18)
+
+
+### Bug Fixes
+
+* exclude package-name component from release-please tags ([#30](https://github.com/neilcabugos/psgc_picker/issues/30)) ([473202c](https://github.com/neilcabugos/psgc_picker/commit/473202ccec673730f924d6c7805cabbf55d79fe8))
+* guard notifyListeners with disposed check in selectors ([#23](https://github.com/neilcabugos/psgc_picker/issues/23)) ([f792873](https://github.com/neilcabugos/psgc_picker/commit/f792873fa56593e04bf7a75cb74521be13159324))
+* make load() idempotent after a successful completion ([#26](https://github.com/neilcabugos/psgc_picker/issues/26)) ([ddc61f0](https://github.com/neilcabugos/psgc_picker/commit/ddc61f016ba266787d7f8b6f73327762776b9906))
+* use plain version tags/release names for release-please ([#28](https://github.com/neilcabugos/psgc_picker/issues/28)) ([4ee7a41](https://github.com/neilcabugos/psgc_picker/commit/4ee7a411908317158bf3b483fc9f72a435086489))
+* validate selector codes against current list ([#25](https://github.com/neilcabugos/psgc_picker/issues/25)) ([af4e695](https://github.com/neilcabugos/psgc_picker/commit/af4e695d9aa9c1fc9afc7f40e0198f76e53bc219))
+
 ## [1.1.1](https://github.com/neilcabugos/psgc_picker/compare/psgc_picker-v1.1.0...psgc_picker-v1.1.1) (2026-08-18)
 
 
