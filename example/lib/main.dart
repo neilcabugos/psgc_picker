@@ -26,18 +26,20 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           bottom: const TabBar(tabs: [
             Tab(text: 'PsgcPicker'),
             Tab(text: 'Standalone fields'),
+            Tab(text: 'Searchable'),
           ]),
         ),
         body: const TabBarView(
           children: [
             _PickerDemo(),
             _StandaloneFieldsDemo(),
+            _SearchableDemo(),
           ],
         ),
       ),
@@ -56,9 +58,9 @@ class _PickerDemo extends StatelessWidget {
         regionLabel: 'Region',
         provinceLabel: 'Province',
         cityLabel: 'City/Municipality',
-        selectedRegion: 'CALABARZON',
-        selectedProvince: 'RIZAL',
-        selectedCity: 'CAINTA',
+        selectedRegion: '',
+        selectedProvince: '',
+        selectedCity: '',
         spacing: 10,
         onRegionChanged: (value) => {
           // Get the selected value here
@@ -91,9 +93,6 @@ class _StandaloneFieldsDemoState extends State<_StandaloneFieldsDemo> {
   void initState() {
     super.initState();
     _controller = PsgcPickerController(
-      selectedRegion: 'CALABARZON',
-      selectedProvince: 'RIZAL',
-      selectedCity: 'CAINTA',
       onRegionChanged: (value) => {
         // Get the selected value here
       },
@@ -138,6 +137,38 @@ class _StandaloneFieldsDemoState extends State<_StandaloneFieldsDemo> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Demonstrates [PsgcPicker.searchable]: type-to-filter comboboxes instead
+/// of scrolling dropdown lists.
+class _SearchableDemo extends StatelessWidget {
+  const _SearchableDemo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: PsgcPicker(
+        searchable: true,
+        regionLabel: 'Region',
+        provinceLabel: 'Province',
+        cityLabel: 'City/Municipality',
+        selectedRegion: '',
+        selectedProvince: '',
+        selectedCity: '',
+        spacing: 10,
+        onRegionChanged: (value) => {
+          // Get the selected value here
+        },
+        onProvinceChanged: (value) => {
+          // Get the selected value here
+        },
+        onCityChanged: (value) => {
+          // Get the selected value here
+        },
+      ),
     );
   }
 }

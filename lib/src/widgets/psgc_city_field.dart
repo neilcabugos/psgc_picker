@@ -14,8 +14,16 @@ class PsgcCityField extends StatelessWidget {
 
   final InputDecoration? decoration;
 
+  /// When true, renders a type-to-filter combobox instead of a scrolling
+  /// dropdown list.
+  final bool searchable;
+
   const PsgcCityField(
-      {required this.controller, this.label, this.decoration, super.key});
+      {required this.controller,
+      this.label,
+      this.decoration,
+      this.searchable = false,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +34,7 @@ class PsgcCityField extends StatelessWidget {
         selection: controller.cityList,
         selectedValue: controller.selectedCityCode,
         onSelectionChanged: controller.selectCity,
+        searchable: searchable,
       ),
     );
   }

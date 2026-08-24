@@ -13,8 +13,16 @@ class PsgcProvinceField extends StatelessWidget {
 
   final InputDecoration? decoration;
 
+  /// When true, renders a type-to-filter combobox instead of a scrolling
+  /// dropdown list.
+  final bool searchable;
+
   const PsgcProvinceField(
-      {required this.controller, this.label, this.decoration, super.key});
+      {required this.controller,
+      this.label,
+      this.decoration,
+      this.searchable = false,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +33,7 @@ class PsgcProvinceField extends StatelessWidget {
         selection: controller.provinceList,
         selectedValue: controller.selectedProvinceCode,
         onSelectionChanged: controller.selectProvince,
+        searchable: searchable,
       ),
     );
   }
