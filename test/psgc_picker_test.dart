@@ -30,6 +30,8 @@ const _ncrRegionCode = '130000000';
 const _ncrRegionName = 'NCR';
 const _ncrCityCount = 17;
 
+void _noop(String _) {}
+
 void main() {
   List<DropdownButton<String>> dropdowns(WidgetTester tester) => tester
       .widgetList<DropdownButton<String>>(find.byType(DropdownButton<String>))
@@ -76,6 +78,46 @@ void main() {
 
   List<String?> itemCodes(DropdownButton<String> dropdown) =>
       dropdown.items!.map((item) => item.value).toList();
+
+  List<RawAutocomplete<SelectionModel>> autocompletes(
+          WidgetTester tester) =>
+      tester
+          .widgetList<RawAutocomplete<SelectionModel>>(
+              find.byType(RawAutocomplete<SelectionModel>))
+          .toList();
+
+  // Mirrors pumpPicker's real-asset-I/O wait, but polls the searchable
+  // fields' RawAutocomplete option source instead of DropdownButton items,
+  // since PsgcPicker(searchable: true) never renders a DropdownButton.
+  Future<void> pumpSearchablePicker(WidgetTester tester) async {
+    await tester.runAsync(() async {
+      await tester.pumpWidget(const MaterialApp(
+        home: Scaffold(
+          body: PsgcPicker(
+            searchable: true,
+            selectedRegion: '',
+            selectedProvince: '',
+            selectedCity: '',
+            onRegionChanged: _noop,
+            onProvinceChanged: _noop,
+            onCityChanged: _noop,
+          ),
+        ),
+      ));
+      for (var i = 0; i < 40; i++) {
+        final autos = autocompletes(tester);
+        if (autos.isNotEmpty) {
+          final options =
+              await autos[0].optionsBuilder(const TextEditingValue());
+          if (options.isNotEmpty) return;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        await tester.pump();
+      }
+      throw StateError(
+          'PSGC data did not finish loading within the test timeout');
+    });
+  }
 
   testWidgets('renders region/province/city dropdowns after loading data',
       (tester) async {
@@ -200,5 +242,121 @@ void main() {
     expect(dropdowns(tester)[1].items, isEmpty);
     expect(dropdowns(tester)[2].items, isEmpty);
     expect(regionChanges, isEmpty);
+  });
+
+  testWidgets(
+      'PsgcPicker(searchable: true) renders comboboxes instead of dropdowns',
+      (tester) async {
+    await pumpSearchablePicker(tester);
+
+    expect(find.byType(DropdownButton<String>), findsNothing);
+    expect(find.byType(TextField), findsNWidgets(3));
+  });
+
+  testWidgets(
+      'searchable field: typing filters options, tapping one selects it and '
+      'updates the field text', (tester) async {
+    final regionChanges = <String>[];
+    late PsgcPickerController controller;
+    await tester.runAsync(() async {
+      controller = PsgcPickerController(onRegionChanged: regionChanges.add);
+      await controller.load();
+    });
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: PsgcRegionField(controller: controller, searchable: true),
+      ),
+    ));
+    await tester.pump();
+
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.byType(DropdownButton<String>), findsNothing);
+
+    await tester.enterText(find.byType(TextField), 'ilocos');
+    await tester.pumpAndSettle();
+
+    final ilocosOption = find.text(_ilocosRegionName.toUpperCase());
+    expect(ilocosOption, findsOneWidget);
+
+    await tester.tap(ilocosOption);
+    await tester.pumpAndSettle();
+
+    expect(regionChanges, equals([_ilocosRegionName.toUpperCase()]));
+    expect(controller.selectedRegionCode, _ilocosRegionCode);
+    expect(find.widgetWithText(TextField, _ilocosRegionName.toUpperCase()),
+        findsOneWidget);
+    // The options overlay (rendered as ListTiles) should close after a
+    // selection is made, rather than staying open with the pick highlighted.
+    expect(find.byType(ListTile), findsNothing);
+  });
+
+  testWidgets(
+      'searchable field: options refresh when the controller cascades a new '
+      'selection list into it, even without the user typing', (tester) async {
+    late PsgcPickerController controller;
+    await tester.runAsync(() async {
+      controller = PsgcPickerController();
+      await controller.load();
+    });
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: PsgcCityField(controller: controller, searchable: true),
+      ),
+    ));
+    await tester.pump();
+
+    expect(controller.cityList, isEmpty);
+
+    // Select region then province directly on the controller, as if the
+    // user picked them via separate fields — this refilters the city list
+    // without this field's own text ever changing.
+    controller.selectRegion(_ilocosRegionCode);
+    await tester.pumpAndSettle();
+    controller.selectProvince(_ilocosNorteCode);
+    await tester.pumpAndSettle();
+
+    expect(controller.cityList, isNotEmpty);
+
+    // Focus the field without typing anything.
+    await tester.tap(find.byType(TextField));
+    await tester.pumpAndSettle();
+
+    // The refreshed city list should already be showing.
+    expect(find.text(_adamsName.toUpperCase()), findsOneWidget);
+  });
+
+  testWidgets(
+      'searchable field: unfocusing without picking an option reverts the '
+      'text to the current selection', (tester) async {
+    late PsgcPickerController controller;
+    await tester.runAsync(() async {
+      controller = PsgcPickerController();
+      await controller.load();
+    });
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: Column(children: [
+          PsgcRegionField(controller: controller, searchable: true),
+          const TextField(),
+        ]),
+      ),
+    ));
+    await tester.pump();
+
+    await tester.enterText(find.byType(TextField).first, 'not a real region');
+    await tester.pumpAndSettle();
+
+    // Move focus elsewhere to trigger the revert-on-blur sync.
+    await tester.tap(find.byType(TextField).last);
+    await tester.pumpAndSettle();
+
+    expect(find.widgetWithText(TextField, 'not a real region'), findsNothing);
+    expect(controller.selectedRegionCode, isNull);
   });
 }

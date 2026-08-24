@@ -28,6 +28,10 @@ class PsgcPicker extends StatefulWidget {
   /// [cityLabel] when both are provided.
   final InputDecoration? cityDecoration;
 
+  /// When true, renders all three fields as type-to-filter comboboxes
+  /// instead of scrolling dropdown lists.
+  final bool searchable;
+
   /// (required) returns a function with string value from [region] selection
   final ValueChanged<String> onRegionChanged;
 
@@ -70,6 +74,7 @@ class PsgcPicker extends StatefulWidget {
       this.regionDecoration,
       this.provinceDecoration,
       this.cityDecoration,
+      this.searchable = false,
       super.key});
 
   @override
@@ -112,17 +117,20 @@ class _PsgcPickerState extends State<PsgcPicker> {
             PsgcRegionField(
                 controller: _controller,
                 label: widget.regionLabel,
-                decoration: widget.regionDecoration),
+                decoration: widget.regionDecoration,
+                searchable: widget.searchable),
             SizedBox(height: widget.spacing),
             PsgcProvinceField(
                 controller: _controller,
                 label: widget.provinceLabel,
-                decoration: widget.provinceDecoration),
+                decoration: widget.provinceDecoration,
+                searchable: widget.searchable),
             SizedBox(height: widget.spacing),
             PsgcCityField(
                 controller: _controller,
                 label: widget.cityLabel,
-                decoration: widget.cityDecoration),
+                decoration: widget.cityDecoration,
+                searchable: widget.searchable),
           ],
         );
       },
