@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/neilcabugos/psgc_picker/compare/1.1.1...1.2.0) (2026-08-24)
+
+
+### Features
+
+* add searchable combobox mode to PsgcPicker fields ([#31](https://github.com/neilcabugos/psgc_picker/issues/31)) ([fa2c469](https://github.com/neilcabugos/psgc_picker/commit/fa2c4698502523f7a0d705ac2ac8ead77477c732))
+
+
+### Bug Fixes
+
+* exclude package-name component from release-please tags ([#30](https://github.com/neilcabugos/psgc_picker/issues/30)) ([473202c](https://github.com/neilcabugos/psgc_picker/commit/473202ccec673730f924d6c7805cabbf55d79fe8))
+* use plain version tags/release names for release-please ([#28](https://github.com/neilcabugos/psgc_picker/issues/28)) ([4ee7a41](https://github.com/neilcabugos/psgc_picker/commit/4ee7a411908317158bf3b483fc9f72a435086489))
+
 ## [1.1.1](https://github.com/neilcabugos/psgc_picker/compare/psgc_picker-v1.1.0...psgc_picker-v1.1.1) (2026-08-18)
 
 
