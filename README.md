@@ -96,6 +96,25 @@ class _MyFormState extends State<MyForm> {
 
 ![Region, province, and city fields sharing a PsgcPickerController while rendered in separate cards](screenshots/standalone_fields.png)
 
+### Searchable combobox mode
+
+Set `searchable: true` to render a field as a type-to-filter combobox instead of a scrolling dropdown list — useful for provinces/cities where the list can be long. `PsgcPicker` applies it to all three fields at once; the standalone `PsgcRegionField`/`PsgcProvinceField`/`PsgcCityField` widgets each take their own `searchable` param, so you can mix searchable and non-searchable fields.
+
+```dart
+PsgcPicker(
+  regionLabel: 'Region',
+  provinceLabel: 'Province',
+  cityLabel: 'City/Municipality',
+  selectedRegion: 'CALABARZON',
+  selectedProvince: 'RIZAL',
+  selectedCity: 'CAINTA',
+  searchable: true,
+  onRegionChanged: (value) => {},
+  onProvinceChanged: (value) => {},
+  onCityChanged: (value) => {},
+)
+```
+
 ### Styling
 
 Each field (`regionLabel`/`regionDecoration`, `provinceLabel`/`provinceDecoration`, `cityLabel`/`cityDecoration` on `PsgcPicker`; `label`/`decoration` on `PsgcRegionField`, `PsgcProvinceField`, `PsgcCityField`) accepts either:
